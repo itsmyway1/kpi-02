@@ -1,0 +1,52 @@
+:root{--bg:#eef1f4;--surface:#fff;--ink:#16222b;--muted:#566774;--line:#d3dbe1;--accent:#12506b;--soft:#dbe9ef;--warn-bg:#fff0cc;--warn-ink:#6b4200;--err:#a8231b;--err-bg:#fdeceb}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 "Pretendard Variable",Pretendard,"Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",system-ui,sans-serif;font-variant-numeric:tabular-nums}
+.top{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;padding:18px max(16px,env(safe-area-inset-right)) 8px max(16px,env(safe-area-inset-left));max-width:960px;margin:0 auto}
+h1{font-size:1.3rem;margin:0;letter-spacing:-.01em}
+h2{font-size:1.05rem;margin:0 0 10px}
+main{max-width:960px;margin:0 auto;padding:4px 16px 48px;display:grid;gap:16px}
+.badge{background:var(--warn-bg);color:var(--warn-ink);border:1px solid #e3c46a;border-radius:999px;padding:2px 12px;font-size:.85rem;font-weight:700}
+.badge.live{background:var(--soft);color:var(--accent);border-color:#9bc0d0}
+.note,.muted{color:var(--muted)}.note{margin:0}.small{font-size:.85rem;margin:6px 0 0}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px}
+.panel.error{background:var(--err-bg);border-color:#e7b3af;color:var(--err)}
+.panel p{margin:0 0 10px}.panel p:last-child{margin:0}
+.filters{display:flex;flex-wrap:wrap;gap:12px;align-items:end}
+label{display:grid;gap:4px;font-size:.9rem;font-weight:600}
+select,input{font:inherit;min-height:44px;padding:8px 10px;border:1px solid #9aa9b4;border-radius:8px;background:#fff;color:var(--ink);width:100%}
+.filters label{flex:1 1 150px}
+button{font:inherit;min-height:44px;padding:8px 18px;border-radius:8px;border:1px solid var(--accent);background:var(--accent);color:#fff;font-weight:700;cursor:pointer}
+button.ghost{background:#fff;color:var(--accent)}
+button:disabled{opacity:.6;cursor:progress}
+:focus-visible{outline:3px solid #f2a900;outline-offset:2px}
+.summary{display:grid;gap:16px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:20px}
+.label{margin:0;font-weight:700}
+.rate-value{margin:2px 0 8px;font-size:clamp(2.6rem,12vw,4rem);line-height:1.05;font-weight:800;color:var(--accent);letter-spacing:-.03em}
+.rate-value.none{font-size:1.6rem;color:var(--muted)}
+.bar{position:relative;height:16px;border-radius:8px;background:var(--soft);overflow:visible}
+.bar i{display:block;height:100%;border-radius:8px;background:var(--accent);width:0;transition:width .3s}
+.bar .tick{position:absolute;left:83.333%;top:-5px;bottom:-5px;width:2px;background:var(--ink)}
+.totals{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:0}
+.totals dt{font-size:.85rem;color:var(--muted)}.totals dd{margin:0;font-size:1.35rem;font-weight:700}
+.table-wrap{background:var(--surface);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+table{width:100%;border-collapse:collapse}
+th,td{padding:10px 12px;text-align:left;border-bottom:1px solid var(--line)}
+th{font-size:.85rem;color:var(--muted);background:#f7f9fa}.num{text-align:right}
+tfoot td{font-weight:800;border-bottom:0;background:#f7f9fa}
+#add-form{display:grid;gap:12px;grid-template-columns:repeat(2,1fr);background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px}
+#add-form button{grid-column:1/-1}
+.err{color:var(--err);font-size:.85rem;font-weight:500;min-height:0}
+input[aria-invalid=true]{border-color:var(--err)}
+.form-msg{margin:8px 0 0;min-height:1.5em}.form-msg.ok{color:var(--accent)}.form-msg.bad{color:var(--err)}
+@media (min-width:720px){.summary{grid-template-columns:1.4fr 1fr;align-items:center}.totals{grid-template-columns:1fr}#add-form{grid-template-columns:repeat(4,1fr) auto}#add-form button{grid-column:auto}}
+@media (max-width:640px){
+  thead{position:absolute;left:-9999px}
+  table,tbody,tfoot,tr,td{display:block}
+  tr{padding:10px 12px;border-bottom:1px solid var(--line)}
+  td{display:flex;justify-content:space-between;gap:12px;border:0;padding:3px 0;text-align:right}
+  td::before{content:attr(data-label);color:var(--muted);font-weight:600}
+  td.num{text-align:right}
+  tfoot td{background:none}tfoot tr{background:#f7f9fa}
+}
+@media (prefers-reduced-motion:reduce){.bar i{transition:none}}

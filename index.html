@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>월·부서별 KPI 달성 현황</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="top">
+  <h1>월·부서별 KPI 달성 현황</h1>
+  <span id="mode-badge" class="badge" role="status">샘플 모드</span>
+</header>
+<main>
+  <p id="mode-note" class="note"></p>
+  <noscript><p class="panel error">이 화면은 JavaScript가 필요합니다.</p></noscript>
+
+  <div id="state" class="panel" role="status" hidden></div>
+
+  <form id="filters" class="filters" aria-label="필터" hidden>
+    <label>월<select id="f-month"></select></label>
+    <label>부서<select id="f-dept"></select></label>
+    <button type="button" id="f-reset" class="ghost">필터 초기화</button>
+  </form>
+
+  <section id="summary" class="summary" aria-label="합계와 달성률" hidden>
+    <div class="rate">
+      <p class="label">달성률 <span id="scope" class="muted"></span></p>
+      <p id="rate-value" class="rate-value">–</p>
+      <div class="bar" id="rate-bar" role="img" aria-label="달성률 막대"><i id="rate-fill"></i><b class="tick" title="100%"></b></div>
+      <p class="muted small">실적 합계 ÷ 목표 합계 × 100 · 막대의 세로선이 100%</p>
+    </div>
+    <dl class="totals">
+      <div><dt>목표 합계</dt><dd id="target-total">–</dd></div>
+      <div><dt>실적 합계</dt><dd id="actual-total">–</dd></div>
+      <div><dt>근거 행 수</dt><dd id="row-count">–</dd></div>
+    </dl>
+  </section>
+
+  <section id="evidence" aria-labelledby="ev-h" hidden>
+    <h2 id="ev-h">근거표</h2>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>월</th><th>부서</th><th class="num">목표</th><th class="num">실적</th><th class="num">달성률</th></tr></thead>
+        <tbody id="rows"></tbody>
+        <tfoot id="foot"></tfoot>
+      </table>
+    </div>
+  </section>
+
+  <section id="entry" aria-labelledby="en-h" hidden>
+    <h2 id="en-h">목표·실적 입력</h2>
+    <form id="add-form" novalidate>
+      <label>월<input id="i-month" type="month" required placeholder="YYYY-MM" inputmode="numeric"><span class="err" id="e-month"></span></label>
+      <label>부서<input id="i-dept" list="dept-list" maxlength="20" autocomplete="off" required><datalist id="dept-list"></datalist><span class="err" id="e-dept"></span></label>
+      <label>목표<input id="i-target" type="number" inputmode="decimal" min="0" step="any" required><span class="err" id="e-target"></span></label>
+      <label>실적<input id="i-actual" type="number" inputmode="decimal" min="0" step="any" required><span class="err" id="e-actual"></span></label>
+      <button type="submit" id="add-btn">항목 추가</button>
+    </form>
+    <p id="form-msg" class="form-msg" role="alert"></p>
+  </section>
+</main>
+
+<script src="src/config.js"></script>
+<script src="src/domain/kpi.js"></script>
+<script src="src/data/sampleData.js"></script>
+<script src="src/data/repository.js"></script>
+<script src="src/ui/app.js"></script>
+</body>
+</html>
