@@ -1,70 +1,39 @@
-<!doctype html>
-<html lang="ko">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>월·부서별 KPI 달성 현황</title>
-  <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-<header class="top">
-  <h1>월·부서별 KPI 달성 현황</h1>
-  <span id="mode-badge" class="badge" role="status">샘플 모드</span>
-</header>
-<main>
-  <p id="mode-note" class="note"></p>
-  <noscript><p class="panel error">이 화면은 JavaScript가 필요합니다.</p></noscript>
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>KPI 대시보드 · 첫 제작 결과</title><link rel="icon" href="data:,"><link rel="stylesheet" href="./style.css"></head><body><header><div class="eyebrow">업무 데이터를 한눈에 · 가상 KPI 실습</div><h1>KPI 대시보드</h1><p>월·부서별 목표와 실적을 비교합니다.</p>
+<div id="auth-section" style="margin-top: 10px;">
+  <div id="logged-out-view">
+    <input type="email" id="auth-email" placeholder="이메일" style="width:200px; display:inline-block;">
+    <input type="password" id="auth-password" placeholder="비밀번호" style="width:200px; display:inline-block;">
+    <button id="btn-login" class="primary">로그인</button>
+    <button id="btn-signup">회원가입</button>
+  </div>
+  <div id="logged-in-view" hidden>
+    <span id="user-email-display" style="color: #c0d3ef; margin-right: 10px;"></span>
+    <button id="btn-logout">로그아웃</button>
+  </div>
+</div>
+</header><main>
+<section class="panel mode-bar"><strong id="mode-label">샘플 모드 · DB 미연결</strong><span id="mode-detail">가상 6건으로 표시합니다. 새로고침하면 초기 상태로 돌아갑니다.</span></section>
+<!--EXTENSION-->
 
-  <div id="state" class="panel" role="status" hidden></div>
+<section class="panel" id="input-panel" hidden>
+  <h2>데이터 추가</h2>
+  <div class="toolbar">
+    <label>월<input type="month" id="input-month"></label>
+    <label>부서<input type="text" id="input-team" placeholder="예: 영업A"></label>
+    <label>목표 (원)<input type="number" id="input-target" min="0" placeholder="0"></label>
+    <label>실적 (원)<input type="number" id="input-actual" min="0" placeholder="0"></label>
+    <button id="btn-save" type="button" class="primary">저장</button>
+  </div>
+</section>
 
-  <form id="filters" class="filters" aria-label="필터" hidden>
-    <label>월<select id="f-month"></select></label>
-    <label>부서<select id="f-dept"></select></label>
-    <button type="button" id="f-reset" class="ghost">필터 초기화</button>
-  </form>
+<section class="panel"><h2>조회 조건</h2><div class="toolbar"><label>월<select id="filter-month"></select></label><label>부서<select id="filter-team"></select></label><label id="user-filter-label" hidden>사용자 UUID<select id="filter-user"></select></label><button id="filter-reset" type="button">필터 초기화</button></div></section>
+<div class="stats" aria-live="polite"><div class="stat"><span>목표 합계</span><strong id="total-target"></strong></div><div class="stat"><span>실적 합계</span><strong id="total-actual"></strong></div><div class="stat"><span>달성률</span><strong id="total-rate"></strong></div><div class="stat"><span>조회 건수</span><strong id="total-count"></strong></div></div>
+<section class="panel"><h2>부서별 달성률</h2><p class="muted">막대는 100%까지 표시하며 실제 달성률은 숫자로 확인합니다.</p><div id="chart"></div></section>
+<section class="panel"><h2>계산 근거표</h2><p id="empty" hidden>조건에 맞는 데이터가 없습니다.</p><div class="table-wrap"><table><thead><tr><th>월</th><th>부서</th><th>목표 원</th><th>실적 원</th><th>달성률</th><th id="owner-head" hidden>사용자 UUID</th><th id="action-head" hidden>편집</th></tr></thead><tbody id="rows"></tbody></table></div></section>
+<p class="footer">달성률 = 실적 합계 ÷ 목표 합계 × 100 · 목표 합계가 0이면 ‘목표 미설정’ · 모든 예시 값은 가상입니다.</p></main>
+<script src="./config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="./core.js"></script>
 
-  <section id="summary" class="summary" aria-label="합계와 달성률" hidden>
-    <div class="rate">
-      <p class="label">달성률 <span id="scope" class="muted"></span></p>
-      <p id="rate-value" class="rate-value">–</p>
-      <div class="bar" id="rate-bar" role="img" aria-label="달성률 막대"><i id="rate-fill"></i><b class="tick" title="100%"></b></div>
-      <p class="muted small">실적 합계 ÷ 목표 합계 × 100 · 막대의 세로선이 100%</p>
-    </div>
-    <dl class="totals">
-      <div><dt>목표 합계</dt><dd id="target-total">–</dd></div>
-      <div><dt>실적 합계</dt><dd id="actual-total">–</dd></div>
-      <div><dt>근거 행 수</dt><dd id="row-count">–</dd></div>
-    </dl>
-  </section>
-
-  <section id="evidence" aria-labelledby="ev-h" hidden>
-    <h2 id="ev-h">근거표</h2>
-    <div class="table-wrap">
-      <table>
-        <thead><tr><th>월</th><th>부서</th><th class="num">목표</th><th class="num">실적</th><th class="num">달성률</th></tr></thead>
-        <tbody id="rows"></tbody>
-        <tfoot id="foot"></tfoot>
-      </table>
-    </div>
-  </section>
-
-  <section id="entry" aria-labelledby="en-h" hidden>
-    <h2 id="en-h">목표·실적 입력</h2>
-    <form id="add-form" novalidate>
-      <label>월<input id="i-month" type="month" required placeholder="YYYY-MM" inputmode="numeric"><span class="err" id="e-month"></span></label>
-      <label>부서<input id="i-dept" list="dept-list" maxlength="20" autocomplete="off" required><datalist id="dept-list"></datalist><span class="err" id="e-dept"></span></label>
-      <label>목표<input id="i-target" type="number" inputmode="decimal" min="0" step="any" required><span class="err" id="e-target"></span></label>
-      <label>실적<input id="i-actual" type="number" inputmode="decimal" min="0" step="any" required><span class="err" id="e-actual"></span></label>
-      <button type="submit" id="add-btn">항목 추가</button>
-    </form>
-    <p id="form-msg" class="form-msg" role="alert"></p>
-  </section>
-</main>
-
-<script src="src/config.js"></script>
-<script src="src/domain/kpi.js"></script>
-<script src="src/data/sampleData.js"></script>
-<script src="src/data/repository.js"></script>
-<script src="src/ui/app.js"></script>
-</body>
-</html>
+<script src="./app.js"></script>
+</body></html>
